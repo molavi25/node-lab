@@ -58,39 +58,42 @@ const notFound = `
 `;
 
 const server = http.createServer(function (req, res) {
+  //~ HOME /////////////////////////////////////
   if (req.url === "/") {
     res.setHeader("Content-Type", "text/html");
     res.write(index);
-    return res.end();
+    res.end();
   }
 
+  //~ SIGNUP //////////////////////////////////
   if (req.url === "/signup") {
     res.setHeader("Content-Type", "text/html");
     res.write(form);
-    return res.end();
+    res.end();
   }
 
-  if (req.url === "/result") {
-    res.setHeader("Content-Type", "text/html");
-    res.write(result);
+  //~ RESULT //////////////////////////////////
+  if (req.url === "/result" && req.method === "POST") {
+    const body = [];
 
-    if (req.method === "POST") {
-      const body = [];
-      req.on("data", (chunk) => {
-        console.log("CHUNKS", chunk);
-        body.push(chunk);
+    req.on("data", (chunk) => {
+      console.log("CHUNKS", chunk);
+      body.push(chunk);
+    });
+
+    return req.on("end", () => {
+      const parsedBody = Buffer.concat(body).toString();
+      const userInfo = parsedBody.split("=")[1];
+
+      fs.writeFile("userInfo.txt", userInfo, (err) => {
+        res.setHeader("Content-Type", "text/html");
+        res.write(result);
+        res.statusCode = 302;
+        res.end();
       });
-      req.on("end", () => {
-        const parsedBody = Buffer.concat(body).toString();
-        const userInfo = parsedBody.split("=")[1];
-
-        fs.writeFileSync("userInfo.txt", userInfo);
-      });
-
-      res.statusCode = 302;
-      return res.end();
-    }
+    });
   }
+  //~ 404 /////////////////////////////////////
   res.setHeader("Content-Type", "text/html");
   res.write(notFound);
   res.end();
