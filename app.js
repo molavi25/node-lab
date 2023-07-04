@@ -1,8 +1,6 @@
-const http = require("http");
+import http from "http";
+import requestHandler from "./routes.js";
 
-const {handler, someText} = require("./routes");
-console.log(someText);
-
-const server = http.createServer(handler);
+const server = http.createServer(requestHandler);
 
 server.listen(4000);

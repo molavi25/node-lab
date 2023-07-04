@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 
 const index = `
   <html>
@@ -99,7 +99,4 @@ const requestHandler = (req, res) => {
   res.end();
 };
 
-module.exports = {
-  handler: requestHandler,
-  someText: "Some hard coded text",
-};
+export default requestHandler;
